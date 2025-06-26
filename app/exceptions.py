@@ -16,3 +16,7 @@ class ValidationError(CalculatorError):
 class ConfigError(CalculatorError):
     """ Raised when Configration loading fails."""
     pass
+
+class HistoryError(CalculatorError):
+    """Raised when history saving or loading fails."""
+    pass
