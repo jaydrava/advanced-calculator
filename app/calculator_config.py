@@ -1,6 +1,6 @@
 import os
 from dotenv import load_dotenv
-from exceptions import ConfigError
+from app.exceptions import ConfigError
 
 load_dotenv()
 

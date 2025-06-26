@@ -3,7 +3,7 @@ class CalculatorError(Exception):
     pass
 
 
-class OperationsError(CalculatorError):
+class OperationError(CalculatorError):
     """ Raised for invalid operations or failures in operations execution. """
     pass
 
