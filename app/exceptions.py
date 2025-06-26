@@ -20,3 +20,7 @@ class ConfigError(CalculatorError):
 class HistoryError(CalculatorError):
     """Raised when history saving or loading fails."""
     pass
+
+class LoggingError(CalculatorError):
+    """ Raised when logging to file fails """
+    pass
