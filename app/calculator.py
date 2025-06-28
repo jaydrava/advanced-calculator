@@ -1,7 +1,11 @@
 from app.operations import OperationFactory
+from app.history import HistoryManager
+from app.calculator_memento import Caretaker, Memento
 
 class CalculatorREPL:
     def __init__(self):
+        self.history_manager = HistoryManager()
+        self.caretaker = Caretaker()
         print("Welcome to the Modular Command-Line Calculator!")
         print("Type 'help' to see available commands.\n")
 
@@ -32,7 +36,33 @@ class CalculatorREPL:
                     result = operation.execute(a, b)
                     print(f"Result: {result}")
 
-                elif command in ["undo", "redo", "save", "load", "history"]:
+                    self.history_manager.add_entry(command, a, b, result)
+                    memento = Memento(command, a, b, result)
+                    self.caretaker.save_state(memento)
+
+                elif command == "history":
+                    entries = self.history_manager.get_all()
+                    if not entries:
+                        print("History is empty.")
+                    else:
+                        for i, entry in enumerate(entries, start=1):
+                            print(f"{i}. {entry['operation']}({entry['a']}, {entry['b']}) = {entry['result']}")
+
+                elif command == "undo":
+                    state = self.caretaker.undo()
+                    if state:
+                        print(f"Undo -> {state.operation_name}({state.a}, {state.b}) = {state.result}")
+                    else:
+                        print("Nothing to undo.")
+
+                elif command == "redo":
+                    state = self.caretaker.redo()
+                    if state:
+                        print(f"Redo -> {state.operation_name}({state.a}, {state.b}) = {state.result}")
+                    else:
+                        print("Nothing to redo.")
+
+                elif command in ["save", "load"]:
                     print(f"(Stub) Command '{command}' recognized but not implemented yet.")
 
                 else:
