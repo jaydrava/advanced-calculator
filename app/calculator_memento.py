@@ -31,3 +31,8 @@ class Caretaker:
         memento = self.redo_stack.pop()
         self.undo_stack.append(memento)
         return memento.get_state()
+
+    def get_current_state(self):
+        if not self.undo_stack:
+            return None
+        return self.undo_stack[-1].get_state()

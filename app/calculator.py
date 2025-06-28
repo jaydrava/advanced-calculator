@@ -1,11 +1,16 @@
 from app.operations import OperationFactory
 from app.history import HistoryManager
 from app.calculator_memento import Caretaker, Memento
+from app.exceptions import OperationError
+from app.logger import LoggingObserver, AutoSaveObserver
 
 class CalculatorREPL:
     def __init__(self):
         self.history_manager = HistoryManager()
         self.caretaker = Caretaker()
+        self.logger = LoggingObserver()
+        self.auto_saver = AutoSaveObserver(self.history_manager)
+        self.observers = [self.logger, self.auto_saver]
         print("Welcome to the Modular Command-Line Calculator!")
         print("Type 'help' to see available commands.\n")
 
@@ -30,15 +35,26 @@ class CalculatorREPL:
                     "add", "subtract", "multiply", "division",
                     "modulus", "power", "root", "int_divide", "abs_diff"
                 ]:
-                    a = float(command_parts[1])
-                    b = float(command_parts[2])
+                    if len(command_parts) != 3:
+                        print("Error: Please provide exactly two numeric operands. Example: add 5 2")
+                        continue
+                    try:
+                        a = float(command_parts[1])
+                        b = float(command_parts[2])
+                    except ValueError:
+                        print("Error: Operands must be numbers.")
+                        continue
                     operation = OperationFactory.get_operation(command)
                     result = operation.execute(a, b)
                     print(f"Result: {result}")
 
                     self.history_manager.add_entry(command, a, b, result)
-                    memento = Memento(command, a, b, result)
+                    memento = Memento(self.history_manager.history)
                     self.caretaker.save_state(memento)
+
+                    for observer in self.observers:
+                        observer.update(command, a, b, result)
+
 
                 elif command == "history":
                     entries = self.history_manager.get_all()
@@ -51,23 +67,48 @@ class CalculatorREPL:
                 elif command == "undo":
                     state = self.caretaker.undo()
                     if state:
-                        print(f"Undo -> {state.operation_name}({state.a}, {state.b}) = {state.result}")
+                        self.history_manager.history = state  # Restore full history
+                        last_entry = state[-1] if state else None
+                        if last_entry:
+                            print(f"Undo -> {last_entry['operation']}({last_entry['a']}, {last_entry['b']}) = {last_entry['result']}")
+                        else:
+                            print("History is now empty after undo.")
                     else:
                         print("Nothing to undo.")
 
                 elif command == "redo":
                     state = self.caretaker.redo()
                     if state:
-                        print(f"Redo -> {state.operation_name}({state.a}, {state.b}) = {state.result}")
+                        self.history_manager.history = state
+                        last_entry = state[-1] if state else None
+                        if last_entry:
+                            print(f"Redo -> {last_entry['operation']}({last_entry['a']}, {last_entry['b']}) = {last_entry['result']}")
+                        else:
+                            print("Redo restored empty history.")
                     else:
                         print("Nothing to redo.")
 
-                elif command in ["save", "load"]:
-                    print(f"(Stub) Command '{command}' recognized but not implemented yet.")
+                elif command == "save":
+                    try:
+                        self.history_manager.save_to_csv()
+                        print("History saved successfully.")
+                    except Exception as e:
+                        print(f"Error saving history: {e}")
+
+                elif command == "load":
+                    try:
+                        self.history_manager.load_from_csv()
+                        print("History loaded successfully.")
+                    except Exception as e:
+                        print(f"Error loading history: {e}")
 
                 else:
                     print(f"Unknown command: {command}. Type 'help' for a list of commands.")
 
+            except ZeroDivisionError:
+                print("Error: Division by zero is not allowed.")
+            except OperationError as e:
+                print(f"Operation Error: {e}")
             except Exception as e:
                 print(f"Error: {e}")
 
