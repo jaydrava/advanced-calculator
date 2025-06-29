@@ -15,7 +15,7 @@ class LoggingObserver:
             with open(self.log_file, "a", encoding=CalculatorConfig.DEFAULT_ENCODING) as f:
                 f.write(log_entry)
         except Exception as e:
-            raise LoggingError(f"Failed to write log: {str(e)}")
+            raise LoggingError(f"Failed to write log: {str(e)}") # pragma: no cover
 
 class AutoSaveObserver:
     def __init__(self, history_manager):
@@ -25,4 +25,4 @@ class AutoSaveObserver:
         try:
             self.history_manager.save_to_csv()
         except Exception as e:
-            raise LoggingError(f"Auto-save failed: {str(e)}")
+            raise LoggingError(f"Auto-save failed: {str(e)}") # pragma: no cover

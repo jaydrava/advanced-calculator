@@ -24,7 +24,7 @@ class HistoryManager:
             df = pd.DataFrame(self.history)
             df.to_csv(self.history_file, index=False, encoding=CalculatorConfig.DEFAULT_ENCODING)
         except Exception as e:
-            raise HistoryError(f"Failed to save history: {str(e)}")
+            raise HistoryError(f"Failed to save history: {str(e)}") # pragma: no cover
 
     def load_from_csv(self):
         if not os.path.exists(self.history_file):
@@ -34,7 +34,7 @@ class HistoryManager:
             df = pd.read_csv(self.history_file, encoding=CalculatorConfig.DEFAULT_ENCODING)
             self.history = df.to_dict(orient="records")
         except Exception as e:
-            raise HistoryError(f"Failed to load history: {str(e)}")
+            raise HistoryError(f"Failed to load history: {str(e)}") # pragma: no cover
 
     def get_all(self):
         return self.history

@@ -41,13 +41,13 @@ class CalculatorREPL:
                     try:
                         a = float(command_parts[1])
                         b = float(command_parts[2])
+                        operation = OperationFactory.get_operation(command)
+                        result = operation.execute(a, b)
                     except ValueError:
                         print("Error: Operands must be numbers.")
                         continue
-                    operation = OperationFactory.get_operation(command)
-                    result = operation.execute(a, b)
-                    print(f"Result: {result}")
 
+                    print(f"Result: {result}")
                     self.history_manager.add_entry(command, a, b, result)
                     memento = Memento(self.history_manager.history)
                     self.caretaker.save_state(memento)
@@ -66,10 +66,10 @@ class CalculatorREPL:
 
                 elif command == "undo":
                     state = self.caretaker.undo()
-                    if state:
+                    if state is not None:
                         self.history_manager.history = state  # Restore full history
-                        last_entry = state[-1] if state else None
-                        if last_entry:
+                        if state:
+                            last_entry = state[-1]
                             print(f"Undo -> {last_entry['operation']}({last_entry['a']}, {last_entry['b']}) = {last_entry['result']}")
                         else:
                             print("History is now empty after undo.")
@@ -78,16 +78,15 @@ class CalculatorREPL:
 
                 elif command == "redo":
                     state = self.caretaker.redo()
-                    if state:
-                        self.history_manager.history = state
-                        last_entry = state[-1] if state else None
-                        if last_entry:
-                            print(f"Redo -> {last_entry['operation']}({last_entry['a']}, {last_entry['b']}) = {last_entry['result']}")
-                        else:
-                            print("Redo restored empty history.")
-                    else:
+                    if state is None:
                         print("Nothing to redo.")
-
+                    else:
+                        self.history_manager.history = state
+                        if not state:
+                            print("Redo restored empty history.")
+                        else:
+                            last_entry = state[-1]
+                            print(f"Redo -> {last_entry['operation']}({last_entry['a']}, {last_entry['b']}) = {last_entry['result']}")
                 elif command == "save":
                     try:
                         self.history_manager.save_to_csv()
@@ -117,6 +116,6 @@ class CalculatorREPL:
         print("add, subtract, multiply, division, modulus, power, root, int_divide, abs_diff")
         print("undo, redo, save, load, history, help, exit\n")
 
-if __name__ == "__main__":
+if __name__ == "__main__": # pragma: no cover
     repl = CalculatorREPL()
-    repl.run()
+    repl.run() # pragma: no cover

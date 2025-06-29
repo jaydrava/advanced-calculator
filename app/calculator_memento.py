@@ -16,7 +16,7 @@ class Caretaker:
 
     def save_state(self, memento):
         self.undo_stack.append(memento)
-        self.redo_stack.clear()  # Clear redo stack on new action
+        self.redo_stack.clear()
 
     def undo(self):
         if len(self.undo_stack) <= 1:

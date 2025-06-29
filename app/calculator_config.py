@@ -23,5 +23,16 @@ class CalculatorConfig:
             raise ConfigError("MAX_HISTORY_SIZE must be at least 1")
         if cls.MAX_INPUT_VALUE <= 0:
             raise ConfigError("MAX_INPUT_VALUE must be greater than zero")
+def load_config():
 
+    CalculatorConfig.LOG_DIR = os.getenv("CALCULATOR_LOG_DIR", "./logs")
+    CalculatorConfig.HISTORY_DIR = os.getenv("CALCULATOR_HISTORY_DIR", "./history")
+    CalculatorConfig.MAX_HISTORY_SIZE = int(os.getenv("CALCULATOR_MAX_HISTORY_SIZE", 50))
+    CalculatorConfig.AUTO_SAVE = os.getenv("CALCULATOR_AUTO_SAVE", "true").lower() == "true"
+    CalculatorConfig.PRECISION = int(os.getenv("CALCULATOR_PRECISION", 2))
+    CalculatorConfig.MAX_INPUT_VALUE = float(os.getenv("CALCULATOR_MAX_INPUT_VALUE", 1e6))
+    CalculatorConfig.DEFAULT_ENCODING = os.getenv("CALCULATOR_DEFAULT_ENCODING", "utf-8")
+
+    CalculatorConfig.validate()
+    return CalculatorConfig
 
