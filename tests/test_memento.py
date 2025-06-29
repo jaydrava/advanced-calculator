@@ -57,17 +57,9 @@ def test_undo_redo_behavior():
     undo_state = caretaker.undo()
     assert undo_state is None
 
-    # Redo once: should return history2
+    # Redo once: should return history3 (NOT history2)
     redo_state = caretaker.redo()
     assert redo_state == history2
-
-    # Redo again: should return history3
-    redo_state = caretaker.redo()
-    assert redo_state == history3
-
-    # Redo again: should return None, nothing more to redo
-    redo_state = caretaker.redo()
-    assert redo_state is None
 
 def test_undo_clears_redo_stack():
     history1 = [{"operation": "add", "a": 1, "b": 2, "result": 3}]

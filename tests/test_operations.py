@@ -59,3 +59,13 @@ def test_abs_diff():
 def test_invalid_operation():
     with pytest.raises(OperationError):
         OperationFactory.get_operation("invalid")
+
+def test_root_with_zero_exponent():
+    op = OperationFactory.get_operation("root")
+    with pytest.raises(ZeroDivisionError, match="Cannot take root with exponent 0."):
+        op.execute(27, 0)
+
+def test_int_divide_by_zero():
+    op = OperationFactory.get_operation("int_divide")
+    with pytest.raises(ZeroDivisionError, match="Cannot perform interger division by 0."):
+        op.execute(10, 0)
