@@ -33,7 +33,7 @@ class CalculatorREPL:
 
                 elif command in [
                     "add", "subtract", "multiply", "division",
-                    "modulus", "power", "root", "int_divide", "abs_diff"
+                    "modulus", "power", "root", "int_divide", "abs_diff", "precent"
                 ]:
                     if len(command_parts) != 3:
                         print("Error: Please provide exactly two numeric operands. Example: add 5 2")
@@ -113,7 +113,7 @@ class CalculatorREPL:
 
     def print_help(self):
         print("\nAvailable Commands:")
-        print("add, subtract, multiply, division, modulus, power, root, int_divide, abs_diff")
+        print("add, subtract, multiply, division, modulus, power, root, int_divide, abs_diff, precent")
         print("undo, redo, save, load, history, help, exit\n")
 
 if __name__ == "__main__": # pragma: no cover

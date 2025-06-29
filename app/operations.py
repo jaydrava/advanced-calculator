@@ -50,6 +50,11 @@ class AbsDiff:
     def execute(a, b):
         return abs(a - b)
 
+class Percent:
+    @staticmethod
+    def execute(a, b):
+        return (a / b) * 100
+
 class OperationFactory:
     operations = {
 
@@ -61,7 +66,8 @@ class OperationFactory:
         "power": Power,
         "root": Root,
         "int_divide": IntDivide,
-        "abs_diff": AbsDiff
+        "abs_diff": AbsDiff,
+        "percent": Percent
     }
 
     @classmethod

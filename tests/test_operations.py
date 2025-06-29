@@ -69,3 +69,12 @@ def test_int_divide_by_zero():
     op = OperationFactory.get_operation("int_divide")
     with pytest.raises(ZeroDivisionError, match="Cannot perform interger division by 0."):
         op.execute(10, 0)
+
+@pytest.mark.parametrize("a, b, expected", [
+    (50, 100, 50.0),
+    (25, 50, 50.0),
+    (1, 4, 25.0),
+])
+def test_percent(a, b, expected):
+    op = OperationFactory.get_operation("percent")
+    assert op.execute(a, b) == expected
